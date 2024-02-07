@@ -116,4 +116,24 @@ def search_query(search_term):
     connection.close()
     cursor.close()
 
-    return results
+    formatted_results = []
+    for row in results:
+        if isinstance(row, dict):
+            formatted_result = {
+                'year': row['Year'],
+                'title': row['Title'],
+                'link': row['Link'],
+                'authors': row['Authors']
+            }
+        else:
+            formatted_result = {
+                'year': row[0],
+                'title': row[1],
+                'link': row[2],
+                'authors': row[3]
+            }
+
+        formatted_results.append(formatted_result)
+
+
+    return formatted_results

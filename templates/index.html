@@ -3,42 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search</title>
+    <title>Search Results</title>
+    <style>
+        .search-results {
+            margin-top: 20px;
+        }
+        .search-result {
+            margin-bottom: 20px;
+        }
+        .result-title {
+            margin-bottom: 5px;
+        }
+        .result-metadata {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        .result-url {
+            font-size: 12px;
+            color: #888;
+        }
+    </style>
 </head>
 <body>
     <input id="searchInput" type="text" placeholder="Search...">
-    <button id="searchButton">Search</button>
-    
-    <div id="results">
-        <!-- Results will be inserted here -->
+    <div id="searchResultsPlaceholder">
+        <!-- Search results will be inserted here -->
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/lodash/lodash.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
-        document.getElementById("searchButton").addEventListener("click", function() {
-            var searchInput = document.getElementById("searchInput").value;
-            var xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === XMLHttpRequest.DONE) {
-                    if (xhr.status === 200) {
-                        displayResults(JSON.parse(xhr.responseText));
-                    } else {
-                        console.error('Error: ' + xhr.status);
+        document.addEventListener("DOMContentLoaded", function() {
+            var searchInput = document.getElementById("searchInput");
+            var searchResultsPlaceholder = document.getElementById("searchResultsPlaceholder");
+            
+            var debouncedSearch = _.debounce(function(searchValue) {
+                axios.get("/search", {
+                    params: {
+                        q: searchValue
                     }
-                }
-            };
-            xhr.open("GET", "/search?q=" + searchInput, true);
-            xhr.send();
-        });
+                })
+                .then(function (response) {
+                    displayResults(response.data);
+                })
+                .catch(function (error) {
+                    console.error('Error: ', error);
+                });
+            }, 300); // Debounce time in milliseconds
 
-        function displayResults(results) {
-            var resultsDiv = document.getElementById("results");
-            resultsDiv.innerHTML = ""; // Clear previous results
-            results.forEach(function(result) {
-                var resultElement = document.createElement("div");
-                resultElement.innerHTML = "<p>" + result.Year + " - " + result.Title + "</p>";
-                resultsDiv.appendChild(resultElement);
+            searchInput.addEventListener("keyup", function() {
+                var searchValue = searchInput.value;
+                debouncedSearch(searchValue);
             });
-        }
+
+            function displayResults(results) {
+                var resultsDiv = document.createElement("div");
+                resultsDiv.classList.add("search-results");
+                searchResultsPlaceholder.innerHTML = ""; // Clear previous results
+                results.forEach(function(result) {
+                    var resultElement = document.createElement("div");
+                    resultElement.classList.add("search-result");
+                    resultElement.innerHTML = `
+                        <h3 class="result-title"><a href="${result.link}">${result.title}</a></h3>
+                        <p class="result-metadata">${result.authors} - ${result.year}</p>
+                        <p class="result-url">${result.link}</p>
+                    `;
+                    resultsDiv.appendChild(resultElement);
+                });
+                searchResultsPlaceholder.appendChild(resultsDiv);
+            }
+        });
     </script>
 </body>
 </html>
