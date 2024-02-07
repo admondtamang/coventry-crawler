@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search</title>
+</head>
+<body>
+    <input id="searchInput" type="text" placeholder="Search...">
+    <button id="searchButton">Search</button>
+    
+    <div id="results">
+        <!-- Results will be inserted here -->
+    </div>
+
+    <script>
+        document.getElementById("searchButton").addEventListener("click", function() {
+            var searchInput = document.getElementById("searchInput").value;
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        displayResults(JSON.parse(xhr.responseText));
+                    } else {
+                        console.error('Error: ' + xhr.status);
+                    }
+                }
+            };
+            xhr.open("GET", "/search?q=" + searchInput, true);
+            xhr.send();
+        });
+
+        function displayResults(results) {
+            var resultsDiv = document.getElementById("results");
+            resultsDiv.innerHTML = ""; // Clear previous results
+            results.forEach(function(result) {
+                var resultElement = document.createElement("div");
+                resultElement.innerHTML = "<p>" + result.Year + " - " + result.Title + "</p>";
+                resultsDiv.appendChild(resultElement);
+            });
+        }
+    </script>
+</body>
+</html>
