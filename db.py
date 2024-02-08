@@ -106,7 +106,7 @@ def search_query(search_term):
     cursor = connection.cursor()
     
     query = ("SELECT Year, Title, Link, Authors FROM research_papers"
-             " WHERE Title LIKE %(search_term)s")
+             " WHERE Title LIKE %(search_term)s or Authors LIKE %(search_term)s;")
     
     data= {'search_term': f'%{search_term}%'}
 

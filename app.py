@@ -9,17 +9,24 @@ from flask import Flask, render_template, request, jsonify
 app = Flask(__name__)
 
 # This function is called every week to crawl the website and store the data in the database
-def execute_weekly_job(connection, cursor):
+def execute_weekly_job():
+    connection= db.create_connection()
+    if connection is None:
+        exit()
+
+    # Create a cursor
+    cursor = connection.cursor()
+    
     db.create_table_if_not_exists(connection, cursor)
     crawl.crawl_website(connection, cursor, const.URL)
 
 
 def run_schedule():
     # schedule every monday at 00:00 weekly job
-    schedule.every().monday.do(execute_weekly_job)
+    # schedule.every().monday.do(execute_weekly_job)
     
     # for testing in every 10 minutes
-    # schedule.every(10).seconds.do(execute_weekly_job, connection, cursor)
+    schedule.every(10).seconds.do(execute_weekly_job)
 
     while True:
         schedule.run_pending()
