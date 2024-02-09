@@ -39,4 +39,4 @@ def crawl_website( connection, cursor, url):
 
             # Insert to database
             data={'Year': year, 'Title': title, 'Link': link, 'Authors': authors}
-            db.insert_data(connection, cursor, data)
+            db.insert_data( data)

@@ -1,38 +1,17 @@
 import db
-import crawl
-import const
-import schedule
-import time
+import jobs
 from flask import Flask, render_template, request, jsonify
 
+from apscheduler.schedulers.background import BackgroundScheduler
 
 app = Flask(__name__)
 
-# This function is called every week to crawl the website and store the data in the database
-def execute_weekly_job():
-    connection= db.create_connection()
-    if connection is None:
-        exit()
+# Add a job to the scheduler function every week
+scheduler = BackgroundScheduler()
+scheduler.add_job(func=jobs.execute_weekly_job, trigger="interval", weeks=1)
+scheduler.start()
 
-    # Create a cursor
-    cursor = connection.cursor()
-    
-    db.create_table_if_not_exists(connection, cursor)
-    crawl.crawl_website(connection, cursor, const.URL)
-
-
-def run_schedule():
-    # schedule every monday at 00:00 weekly job
-    # schedule.every().monday.do(execute_weekly_job)
-    
-    # for testing in every 10 minutes
-    schedule.every(10).seconds.do(execute_weekly_job)
-
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
-
-
+# serve the home page
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -46,10 +25,5 @@ def search():
     return jsonify(results)
 
 
-if __name__ == "__app__":
-      # Start a separate thread to run the schedule
-    import threading
-    schedule_thread = threading.Thread(target=run_schedule)
-    schedule_thread.start()
-
-
+if __name__ == '__main__':
+    app.run(debug=True)

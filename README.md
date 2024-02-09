@@ -16,6 +16,12 @@ flask run --host=0.0.0.0
 flask --app main.py --debug run
 ```
 
+if error occured : ImportError: cannot import name 'EVENT_TYPE_OPENED' from 'watchdog.events'
+
+```
+pip install --upgrade watchdog
+```
+
 # Notes
 
 - used mysql for data storage

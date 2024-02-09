@@ -82,7 +82,10 @@
                     resultElement.classList.add("search-result");
                     resultElement.innerHTML = `
                         <h3 class="result-title"><a href="${result.link}">${result.title}</a></h3>
-                        <p class="result-metadata">${result.authors} - ${result.year}</p>
+                        <div>
+                            <p class="result-metadata">${result.authors} - ${result.year}</p>
+                            <span class="result-metadata">Relevence Rank: ${result.relevance_rank}</span>
+                        </div>
                         <p class="result-url">${result.link}</p>
                     `;
                     resultsDiv.appendChild(resultElement);

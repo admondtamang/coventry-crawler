@@ -105,8 +105,8 @@ def search_query(search_term):
     # Create a cursor
     cursor = connection.cursor()
     
-    query = ("SELECT Year, Title, Link, Authors FROM research_papers"
-             " WHERE Title LIKE %(search_term)s or Authors LIKE %(search_term)s;")
+    query = ("SELECT Year, Title, Link, Authors, COUNT(*) AS relevance_rank FROM research_papers"
+             " WHERE Title LIKE %(search_term)s or Authors LIKE %(search_term)s GROUP BY Year, Title, Link, Authors  ORDER BY relevance_rank DESC")
     
     data= {'search_term': f'%{search_term}%'}
 
@@ -123,14 +123,16 @@ def search_query(search_term):
                 'year': row['Year'],
                 'title': row['Title'],
                 'link': row['Link'],
-                'authors': row['Authors']
+                'authors': row['Authors'],
+                'relevance_rank': row['relevance_rank']
             }
         else:
             formatted_result = {
                 'year': row[0],
                 'title': row[1],
                 'link': row[2],
-                'authors': row[3]
+                'authors': row[3],
+                'relevance_rank': row[4]
             }
 
         formatted_results.append(formatted_result)
