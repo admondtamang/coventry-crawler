@@ -1,5 +1,9 @@
 import mysql.connector
 import const
+import string
+from nltk.corpus import stopwords, wordnet
+from nltk.stem import WordNetLemmatizer
+
 
 def create_connection():
     # Update these parameters with your PostgreSQL connection details
@@ -52,6 +56,18 @@ def create_table_if_not_exists():
     cursor.close()
     
 
+def filterText(text):
+    # Remove punctuation signs and lowercase all
+    text = text.str.lower()
+    text = text.str.translate(str.maketrans('', '', string.punctuation))
+
+    # Remove stop words
+    stop_words = stopwords.words("english")
+    lemmatizer = WordNetLemmatizer()
+    
+
+
+
 # Insert data into the table
 def insert_data(data):
     # Connect to the database
@@ -67,6 +83,10 @@ def insert_data(data):
         return
 
     print(data['Title'])
+
+   
+    data['TitleIndex'] =filterText(data['Title'])
+
     try:
         # Check if the data already exists
         check_query = "SELECT * FROM research_papers WHERE Title = %(Title)s AND Year = %(Year)s;"

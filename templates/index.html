@@ -42,6 +42,7 @@
 </head>
 <body>
     <div class="container">
+        <img id="image" src="https://softwarica.edu.np/file-manager/photos/1/Logo.svg" width="400" height="300" alt="logo"/>
         <input id="searchInput" type="text" placeholder="Search...">
         <div id="searchResultsPlaceholder">
             <!-- Search results will be inserted here -->
@@ -84,12 +85,19 @@
                         <h3 class="result-title"><a href="${result.link}">${result.title}</a></h3>
                         <div>
                             <p class="result-metadata">${result.authors} - ${result.year}</p>
-                            <span class="result-metadata">Relevence Rank: ${result.relevance_rank}</span>
                         </div>
                         <p class="result-url">${result.link}</p>
                     `;
                     resultsDiv.appendChild(resultElement);
                 });
+
+                    var imageDocument= document.getElementById('image');
+
+                    if(results.length>0)
+                    imageDocument.style.visibility = 'hidden';
+                    else
+                    imageDocument.style.visibility = 'visible';
+
                 searchResultsPlaceholder.appendChild(resultsDiv);
             }
         });
